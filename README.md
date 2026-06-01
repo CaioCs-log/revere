@@ -1,17 +1,20 @@
-# revere-governance
+# Site Revere - Workspace
 
-Fonte de verdade do projeto Site Revere.
+Este é o repositório principal que orquestra o projeto Site Revere.
 
-## Estrutura
-- features.json: backlog por fase + status + links de evidência
-- PROJECT_HISTORY.md: histórico do projeto (mudanças, decisões, validação)
-- specs/: especificações (uma por feature)
-- decisions/: ADRs (decisões arquiteturais)
-- checklists/: DoD e checklist de PR
-- prompts/: papéis dos agentes (orchestrator/implementer/reviewer)
+## Estrutura do Projeto
 
-## Regra operacional
-Antes de iniciar qualquer tarefa em qualquer repo:
-1) Ler features.json
-2) Ler PROJECT_HISTORY.md
-3) Ler a SPEC da feature
+O projeto é organizado em múltiplos repositórios e diretórios especializados:
+
+- **[revere-governance](./revere-governance/)**: Fonte de verdade do projeto. Contém `features.json`, `PROJECT_HISTORY.md`, especificações (SPECs), decisões arquiteturais (ADRs) e checklists.
+- **[revere-storefront](./revere-storefront/)**: Aplicação pública da loja (Next.js).
+- **[revere-admin](./revere-admin/)**: Painel administrativo (Next.js).
+- **[revere-backend](./revere-backend/)**: Camada de backend, integrações e Firebase Functions.
+
+## Governança
+
+Todas as decisões técnicas, especificações de funcionalidades e acompanhamento do backlog residem em `revere-governance`. Consulte este diretório antes de iniciar qualquer desenvolvimento.
+
+## Como usar este workspace
+
+Se estiver usando VS Code, abra o arquivo `revere.code-workspace` para uma experiência integrada.
