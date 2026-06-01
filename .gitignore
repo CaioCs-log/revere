@@ -9,7 +9,7 @@ build/
 out/
 .turbo/
 .firebase/
-lib/
+/lib/
 *.tsbuildinfo
 
 # Testes e Relatórios
