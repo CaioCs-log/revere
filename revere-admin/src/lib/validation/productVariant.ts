@@ -41,7 +41,7 @@ export const productVariantSchema = z
     },
   );
 
-export const activeVariantSchema = productVariantSchema.extend({
+export const activeVariantSchema = productVariantSchema.safeExtend({
   priceCents: z.number().int().positive("Preço deve ser maior que 0"),
   weightGrams: z.number().int().positive("Peso deve ser maior que 0"),
 });

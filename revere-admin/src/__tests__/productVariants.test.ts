@@ -8,6 +8,7 @@ import {
 } from "@/lib/data/productVariants";
 import { createProduct } from "@/lib/data/products";
 import { ProductInput } from "@/lib/validation/product";
+import { productVariantSchema } from "@/lib/validation/productVariant";
 
 describe("ProductVariants Data Layer", () => {
   beforeEach(() => {
