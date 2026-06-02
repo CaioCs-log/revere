@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    env:
+      CI: true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: CI - revere-admin
+        working-directory: revere-admin
+        run: |
+          npm ci
+          npx playwright install --with-deps
+          npm run lint
+          npm run format:check
+          npm test
+          npm run build
+          npm run test:e2e
+
+      - name: CI - revere-storefront
+        working-directory: revere-storefront
+        run: |
+          npm ci
+          npx playwright install --with-deps
+          npm run lint
+          npm run format:check
+          npm test
+          npm run build
+          npm run test:e2e
+
+      - name: CI - revere-backend
+        working-directory: revere-backend
+        run: |
+          npm ci
+          npm run lint
+          npm test
+          npm run build
