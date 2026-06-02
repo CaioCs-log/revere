@@ -248,4 +248,41 @@ describe("ProductVariants Data Layer", () => {
     expect(defaults.length).toBe(1);
     expect(defaults[0].id).toBe(b.id);
   });
+
+  it("should fail validation if compareAtPriceCents is not greater than priceCents", () => {
+    const invalidData = {
+      productId: "p1",
+      name: "V1",
+      sku: "SKU-1",
+      portionLabel: "300g",
+      weightGrams: 300,
+      priceCents: 2000,
+      compareAtPriceCents: 1500, // Invalid: less than priceCents
+      status: "draft",
+    };
+
+    const result = productVariantSchema.safeParse(invalidData);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues[0].message).toBe(
+        "Preço comparativo deve ser maior que o preço original",
+      );
+    }
+  });
+
+  it("should pass validation if compareAtPriceCents is null", () => {
+    const validData = {
+      productId: "p1",
+      name: "V1",
+      sku: "SKU-1",
+      portionLabel: "300g",
+      weightGrams: 300,
+      priceCents: 2000,
+      compareAtPriceCents: null,
+      status: "draft",
+    };
+
+    const result = productVariantSchema.safeParse(validData);
+    expect(result.success).toBe(true);
+  });
 });

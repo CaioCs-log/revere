@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { ProductVariant } from "@/lib/firebase/productVariants";
+import { isAvailableForSale } from "@/lib/data/productVariants";
 import { Archive, Edit } from "lucide-react";
 
 interface VariantListProps {
@@ -29,6 +30,7 @@ export const VariantList: React.FC<VariantListProps> = ({
             <th className="px-6 py-4">Porção / Peso</th>
             <th className="px-6 py-4">Preço</th>
             <th className="px-6 py-4">Status</th>
+            <th className="px-6 py-4">Venda</th>
             <th className="px-6 py-4 text-right">Ações</th>
           </tr>
         </thead>
@@ -56,6 +58,17 @@ export const VariantList: React.FC<VariantListProps> = ({
                 R$ {(v.priceCents / 100).toFixed(2)}
               </td>
               <td className="px-6 py-4">{v.status}</td>
+              <td className="px-6 py-4">
+                {isAvailableForSale(v) ? (
+                  <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                    Disponível
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-medium text-zinc-800">
+                    Oculta
+                  </span>
+                )}
+              </td>
               <td className="px-6 py-4 text-right">
                 <div className="flex justify-end gap-2">
                   <Link
