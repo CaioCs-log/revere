@@ -8,8 +8,8 @@
 - **Status:** M0 concluído e validado; aguardando refinamento final de M1/M2 antes do prompt oficial de implementação
 - **Data:** 2026-06-01
 - **Responsável pela validação:** Caio Cesar Dos Santos
-- **Fonte base:** SPEC-003 — Firestore Schema v1 versionada no `revere-governance`
-- **Commit base da SPEC-003:** `240f481 docs: add firestore schema v1 spec`
+- **Fonte base:** SPEC-003 — Firestore Schema v2 versionada no `revere-governance`
+- **Commit base da SPEC-003:** `a9997b2 chore: consolidate revere-governance into monorepo`
 - **Escopo desta entrega:** planejamento e contrato de execução da Fase 4.2 no `revere-admin`
 - **Não inclui:** implementação, regras Firestore, Cloud Functions, Storage, checkout, Mercado Pago, Storefront ou Backend
 
@@ -23,7 +23,7 @@
 ## 2. Status
 **M0 — Fundação do Admin concluído e validado; próximo passo é refinar M1 — Categorias e M2 — Tags antes da implementação.**
 
-Esta SPEC organiza a próxima frente do projeto: transformar o schema Firestore v1 em módulos operacionais do Admin.
+Esta SPEC organiza a próxima frente do projeto: transformar o schema Firestore v2 em módulos operacionais do Admin.
 
 Caio/Psiu validaram esta SPEC como base de planejamento da Fase 4.2. O M0 foi implementado pelo Agente CLI (commits `2c8f390` e `b03199c`) e aprovado pela QA do Agente Raptor VSCode em 2026-06-01. Antes do prompt oficial de M1, ainda falta aplicar o refinamento documental P-025 para categorias/tags. Continuam fora de escopo CRUDs não citados, checkout, pagamento, Cloud Functions, Storage ou regras Firestore finais.
 
@@ -43,11 +43,11 @@ A lógica desta SPEC segue a regra operacional do Playbook:
 ## 4. Contexto
 A SPEC-003 já foi validada e versionada no `revere-governance` como:
 
-revere-governance/specs/SPEC-003-firestore-schema-v1.md
+revere-governance/specs/SPEC-003-firestore-schema-v2.md
 
 Commit:
 
-240f481 docs: add firestore schema v1 spec
+a9997b2 chore: consolidate revere-governance into monorepo
 
 A partir dela, a Fase 4.2 deve implementar primeiro o Admin, começando por uma fundação segura e avançando por módulos pequenos.
 
@@ -770,3 +770,4 @@ A Fase 4.2 é o ponto em que o projeto começa a sair da governança pura e entr
 Por isso, esta SPEC existe para evitar que os agentes implementem "um CRUD genérico" sem respeitar a estratégia da Revere.
 
 O Admin precisa nascer como ferramenta de operação, não apenas como formulário técnico.
+ário técnico.
