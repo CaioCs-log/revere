@@ -1,0 +1,76 @@
+{
+  "project": "Site Revere",
+  "updatedAt": "2026-06-01",
+  "features": [
+    {
+      "id": "F001",
+      "name": "Governance harness",
+      "status": "done",
+      "phase": "Fase 1",
+      "repo": "revere-governance",
+      "specs": ["SPEC-TEMPLATE", "SPEC-001", "SPEC-002"],
+      "adrs": ["ADR-0001", "ADR-0002", "ADR-0003"],
+      "notes": "Estrutura de governança, checklists, roles, SPECs iniciais e ADRs criadas."
+    },
+    {
+      "id": "F002",
+      "name": "Firebase projects and base services",
+      "status": "partial",
+      "phase": "Fase 2",
+      "repo": "cloud",
+      "specs": [],
+      "adrs": ["ADR-0001", "ADR-0002"],
+      "notes": "Projetos revere-dev e revere-prod criados; Firestore e Auth ativos; Cloud Functions e Storage pendentes por billing/crédito."
+    },
+    {
+      "id": "F003",
+      "name": "Storefront base app",
+      "status": "done",
+      "phase": "Fase 3.1",
+      "repo": "revere-storefront",
+      "specs": [],
+      "adrs": ["ADR-0001"],
+      "notes": "Next.js, TypeScript, Tailwind, ESLint, Prettier, Vitest, Playwright e GOVERNANCE.md configurados."
+    },
+    {
+      "id": "F004",
+      "name": "Admin base app",
+      "status": "done",
+      "phase": "Fase 3.2",
+      "repo": "revere-admin",
+      "specs": [],
+      "adrs": ["ADR-0001"],
+      "notes": "Next.js, rotas placeholder, Prettier, Vitest, Playwright e GOVERNANCE.md configurados."
+    },
+    {
+      "id": "F005",
+      "name": "Backend base functions",
+      "status": "done",
+      "phase": "Fase 3.3",
+      "repo": "revere-backend",
+      "specs": [],
+      "adrs": ["ADR-0001"],
+      "notes": "Firebase Functions em TypeScript, estrutura domain/validators/webhooks/http, Zod, testes e GOVERNANCE.md configurados."
+    },
+    {
+      "id": "F006",
+      "name": "Firestore schema v1",
+      "status": "done",
+      "phase": "Fase 4.1",
+      "repo": "revere-governance",
+      "specs": ["SPEC-003"],
+      "adrs": ["ADR-0002", "ADR-0003"],
+      "notes": "SPEC-003 versionada documentalmente; schema v1 aprovado para implementação."
+    },
+    {
+      "id": "F007",
+      "name": "Admin-first CRUD",
+      "status": "planned",
+      "phase": "Fase 4.2",
+      "repo": "revere-admin",
+      "specs": ["SPEC-003"],
+      "adrs": [],
+      "notes": "Implementação futura de CRUD de produtos, variantes, categorias, tags, bairros, frete e conteúdo dinâmico."
+    }
+  ]
+}
