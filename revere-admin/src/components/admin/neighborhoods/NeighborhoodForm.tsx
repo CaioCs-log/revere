@@ -69,7 +69,47 @@ export function NeighborhoodForm({
   }, [name, setValue, initialData]);
 
   const onFormSubmit = async (data: NeighborhoodInput) => {
-    await onSubmit(data);
+    // Normaliza campos numéricos para evitar enviar NaN e garantir tipos esperados
+    const normalized: Partial<NeighborhoodInput> = { ...data };
+    const asRecord = data as unknown as Record<string, unknown>;
+
+    // deliveryFeeCents: se vazio ou NaN => 0
+    const rawDeliveryFee = asRecord.deliveryFeeCents;
+    const parsedDeliveryFee = Number(rawDeliveryFee as unknown as number);
+    normalized.deliveryFeeCents =
+      rawDeliveryFee === "" ||
+      rawDeliveryFee == null ||
+      Number.isNaN(parsedDeliveryFee)
+        ? 0
+        : Math.round(parsedDeliveryFee);
+
+    // freeShippingMinimumCents: se vazio => null, se válido => inteiro
+    const rawFreeMin = asRecord.freeShippingMinimumCents;
+    const parsedFreeMin = Number(rawFreeMin as unknown as number);
+    normalized.freeShippingMinimumCents =
+      rawFreeMin === "" || rawFreeMin == null
+        ? null
+        : Number.isNaN(parsedFreeMin)
+          ? null
+          : Math.round(parsedFreeMin);
+
+    // minimumLeadTimeDays: fallback para 5 se inválido
+    const rawLead = asRecord.minimumLeadTimeDays;
+    const parsedLead = Number(rawLead as unknown as number);
+    normalized.minimumLeadTimeDays =
+      rawLead === "" || rawLead == null || Number.isNaN(parsedLead)
+        ? 5
+        : Math.round(parsedLead);
+
+    // sortOrder: fallback para 0 se inválido
+    const rawSort = asRecord.sortOrder;
+    const parsedSort = Number(rawSort as unknown as number);
+    normalized.sortOrder =
+      rawSort === "" || rawSort == null || Number.isNaN(parsedSort)
+        ? 0
+        : Math.round(parsedSort);
+
+    await onSubmit(normalized as NeighborhoodInput);
   };
 
   return (
