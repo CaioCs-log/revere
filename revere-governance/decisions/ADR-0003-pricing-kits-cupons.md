@@ -35,13 +35,11 @@ Adotar um modelo de precificação em que:
 
 A regra inicial de desconto por quantidade para kits customizáveis será:
 
-- 7 itens: 5%
-- 10 itens: 7%
-- 15 itens: 10%
-- 20 itens: 13%
-- acima de 20 itens: 15%
+- 5% para 7 a 9 pratos;
+- 8% para 10 a 14 pratos;
+- 10% para 15 ou mais pratos.
 
-O frontend pode mostrar mensagens como “quanto falta para o próximo desconto”, mas o cálculo final deve ser validado no backend.
+O frontend pode mostrar mensagens como "quanto falta para o próximo desconto", mas o cálculo final deve ser validado no backend.
 
 ## Regras principais
 
