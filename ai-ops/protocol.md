@@ -40,11 +40,13 @@ Execute apenas o escopo explicitamente autorizado. Em caso de dúvida, pare e pe
 - Marcar tarefa como concluída sem revisão humana.
 
 ## Validação
-Use o comando canônico quando disponível:
+Use o comando canônico:
 
 ```bash
-./scripts/verify.sh
+bash scripts/verify.sh
 ```
+
+Este padrão funciona mesmo quando o arquivo não está com permissão executável no checkout local. Se o arquivo estiver executável, `./scripts/verify.sh` também pode ser usado.
 
 Se a validação não puder ser executada, registre no PR:
 - motivo;

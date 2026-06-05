@@ -43,11 +43,13 @@ Quando houver alteração em app/pacote, rode dentro do pacote alterado:
 Mudança só de docs em `revere-governance` ou `ai-ops` não exige os gates de app, mas deve registrar validação no PR.
 
 ## Validação AI-OPS
-Para tarefas AI-OPS, use o comando canônico quando disponível:
+Para tarefas AI-OPS, use o comando canônico:
 
 ```bash
-./scripts/verify.sh
+bash scripts/verify.sh
 ```
+
+Motivo: este comando funciona mesmo se o arquivo não estiver com permissão executável no checkout local. Se o arquivo estiver executável, `./scripts/verify.sh` também pode ser usado.
 
 Se o comando não existir, estiver indisponível ou não cobrir o escopo, registre a limitação no PR.
 
