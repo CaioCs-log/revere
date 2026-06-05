@@ -1,6 +1,6 @@
 {
   "project": "Site Revere",
-  "updatedAt": "2026-06-01",
+  "updatedAt": "2026-06-05",
   "features": [
     {
       "id": "F001",
@@ -8,9 +8,9 @@
       "status": "done",
       "phase": "Fase 1",
       "repo": "revere-governance",
-      "specs": ["SPEC-TEMPLATE", "SPEC-001", "SPEC-002"],
+      "specs": ["SPEC-TEMPLATE", "SPEC-001", "SPEC-002", "DESIGN-001", "COPY-001", "SPEC-RULES-v2"],
       "adrs": ["ADR-0001", "ADR-0002", "ADR-0003"],
-      "notes": "Estrutura de governança, checklists, roles, SPECs iniciais e ADRs criadas."
+      "notes": "Estrutura de governança, checklists, roles, SPECs iniciais e ADRs criadas; em 2026-06-05 os canônicos DESIGN-001, COPY-001, proposta Rules v2 e ADR-0003 corrigida foram espelhados do Notion."
     },
     {
       "id": "F002",
@@ -60,17 +60,17 @@
       "repo": "revere-governance",
       "specs": ["SPEC-003"],
       "adrs": ["ADR-0002", "ADR-0003"],
-      "notes": "SPEC-003 versionada documentalmente; schema v1 aprovado para implementação."
+      "notes": "SPEC-003 espelhada do Notion como schema vigente v2; fonte documental alinhada ao commit 3b36edd e ao projeto canônico no Notion."
     },
     {
       "id": "F007",
       "name": "Admin-first CRUD",
-      "status": "planned",
+      "status": "done",
       "phase": "Fase 4.2",
       "repo": "revere-admin",
-      "specs": ["SPEC-003"],
+      "specs": ["SPEC-003", "SPEC-004"],
       "adrs": [],
-      "notes": "Implementação futura de CRUD de produtos, variantes, categorias, tags, bairros, frete e conteúdo dinâmico."
+      "notes": "SPEC-004 reespelhada do Notion em 2026-06-05 refletindo M0-M8 concluídos, validados e mergeados em origin/main; GOV-000 fechado."
     }
   ]
 }
