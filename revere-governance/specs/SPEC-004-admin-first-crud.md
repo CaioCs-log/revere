@@ -5,11 +5,11 @@
 ## Metadados
 - **Projeto:** Site Revere
 - **Tipo:** SPEC técnica/documental
-- **Status:** M0 concluído e validado; aguardando refinamento final de M1/M2 antes do prompt oficial de implementação
+- **Status:** M0-M8 concluídos, validados e mergeados em `origin/main`; GOV-000 fechado
 - **Data:** 2026-06-01
 - **Responsável pela validação:** Caio Cesar Dos Santos
-- **Fonte base:** SPEC-003 — Firestore Schema v2 versionada no `revere-governance`
-- **Commit base da SPEC-003:** `a9997b2 chore: consolidate revere-governance into monorepo`
+- **Fonte base:** SPEC-003 — Firestore Schema v2 versionada no monorepo `CaioCs-log/revere`
+- **Commit base da SPEC-003 v2:** `3b36edd docs(specs): versiona schema v2 (SPEC-003), remove schema v1 (SPEC-001) e marca status`
 - **Escopo desta entrega:** planejamento e contrato de execução da Fase 4.2 no `revere-admin`
 - **Não inclui:** implementação, regras Firestore, Cloud Functions, Storage, checkout, Mercado Pago, Storefront ou Backend
 
@@ -21,11 +21,11 @@
 ---
 
 ## 2. Status
-**M0 — Fundação do Admin concluído e validado; próximo passo é refinar M1 — Categorias e M2 — Tags antes da implementação.**
+**M0-M8 do Admin-first concluídos, validados e mergeados em `origin/main`; M7 — Conteúdo dinâmico e M8 — Pedidos também já foram concluídos e mergeados; GOV-000 fechado.**
 
-Esta SPEC organiza a próxima frente do projeto: transformar o schema Firestore v2 em módulos operacionais do Admin.
+Esta SPEC organiza a próxima frente do projeto: transformar o schema Firestore v1 em módulos operacionais do Admin.
 
-Caio/Psiu validaram esta SPEC como base de planejamento da Fase 4.2. O M0 foi implementado pelo Agente CLI (commits `2c8f390` e `b03199c`) e aprovado pela QA do Agente Raptor VSCode em 2026-06-01. Antes do prompt oficial de M1, ainda falta aplicar o refinamento documental P-025 para categorias/tags. Continuam fora de escopo CRUDs não citados, checkout, pagamento, Cloud Functions, Storage ou regras Firestore finais.
+Caio/Psiu validaram esta SPEC como base de planejamento da Fase 4.2. Desde então, M0 a M8 foram executados, validados e mergeados em `origin/main` (M7 commit `95a32a4`, M8 commit `7d79afc`). M6 Kits foi mergeado em `origin/main` via PR #2, commit `3956895`. Continuam fora de escopo checkout, pagamento, Cloud Functions, Storage e regras Firestore finais.
 
 ---
 
@@ -43,11 +43,15 @@ A lógica desta SPEC segue a regra operacional do Playbook:
 ## 4. Contexto
 A SPEC-003 já foi validada e versionada no `revere-governance` como:
 
+```plain text
 revere-governance/specs/SPEC-003-firestore-schema-v2.md
+```
 
 Commit:
 
-a9997b2 chore: consolidate revere-governance into monorepo
+```plain text
+3b36edd docs(specs): versiona schema v2 (SPEC-003), remove schema v1 (SPEC-001) e marca status
+```
 
 A partir dela, a Fase 4.2 deve implementar primeiro o Admin, começando por uma fundação segura e avançando por módulos pequenos.
 
@@ -172,7 +176,8 @@ Fora de escopo:
 ### 8.2. M1 — Categorias
 **Coleção:** `categories`
 
-Objetivo: permitir ao Admin criar e organizar as categorias principais do catálogo.
+Objetivo:
+Permitir ao Admin criar e organizar as categorias principais do catálogo.
 
 Campos principais:
 - `name`
@@ -208,7 +213,8 @@ Critérios de aceite:
 ### 8.3. M2 — Tags
 **Coleção:** `tags`
 
-Objetivo: permitir ao Admin gerenciar tags públicas e operacionais para filtros, selos e organização interna.
+Objetivo:
+Permitir ao Admin gerenciar tags públicas e operacionais para filtros, selos e organização interna.
 
 Campos principais:
 - `name`
@@ -225,7 +231,9 @@ Campos principais:
 
 Tipos:
 
+```typescript
 "nutrition" | "restriction" | "commercial" | "preference" | "operational"
+```
 
 Escopo MVP:
 - CRUD de tags (listar, criar, editar, inativar);
@@ -250,7 +258,8 @@ Critérios de aceite:
 ### 8.4. M3 — Produtos
 **Coleção:** `products`
 
-Objetivo: permitir ao Admin cadastrar e manter produtos base do catálogo.
+Objetivo:
+Permitir ao Admin cadastrar e manter produtos base do catálogo.
 
 Campos principais:
 - `name`
@@ -308,7 +317,8 @@ Critérios de aceite:
 ### 8.5. M4 — Variantes
 **Coleção:** `productVariants`
 
-Objetivo: permitir ao Admin cadastrar as variações comerciais de um produto, principalmente por gramatura e preço.
+Objetivo:
+Permitir ao Admin cadastrar as variações comerciais de um produto, principalmente por gramatura e preço.
 
 Campos principais:
 - `productId`
@@ -356,7 +366,8 @@ Critérios de aceite:
 ### 8.6. M5 — Bairros e frete
 **Coleção:** `neighborhoods`
 
-Objetivo: permitir ao Admin controlar bairros atendidos, taxa de entrega, frete grátis, dias, turnos e lead time.
+Objetivo:
+Permitir ao Admin controlar bairros atendidos, taxa de entrega, frete grátis, dias, turnos e lead time.
 
 Campos principais:
 - `name`
@@ -398,7 +409,8 @@ Critérios de aceite:
 ### 8.7. M6 — Kits
 **Coleção:** `kitPresets`
 
-Objetivo: permitir ao Admin criar kits prontos, sugeridos e customizáveis.
+Objetivo:
+Permitir ao Admin criar kits prontos, sugeridos e customizáveis.
 
 Campos principais:
 - `name`
@@ -425,7 +437,9 @@ Campos principais:
 
 Tipos:
 
+```typescript
 "fixed" | "suggested" | "customizable"
+```
 
 Dependências:
 - M3 Produtos;
@@ -439,9 +453,9 @@ Escopo MVP:
 - repetição permitida;
 - apenas `frozen_meal` para desconto progressivo no MVP;
 - desconto progressivo:
-	- 5% para 7 a 9 pratos;
-	- 8% para 10 a 14 pratos;
-	- 10% para 15 ou mais pratos;
+  - 5% para 7 a 9 pratos;
+  - 8% para 10 a 14 pratos;
+  - 10% para 15 ou mais pratos;
 - configuração de frete grátis promocional por kit;
 - preço fixo ou soma dos itens.
 
@@ -458,7 +472,8 @@ Critérios de aceite:
 ### 8.8. M7 — Conteúdo dinâmico
 **Coleção:** `siteContent`
 
-Objetivo: permitir ao Admin editar conteúdo dinâmico do site, especialmente Home, banners, avisos e destaques.
+Objetivo:
+Permitir ao Admin editar conteúdo dinâmico do site, especialmente Home, banners, avisos e destaques.
 
 Campos principais:
 - `key`
@@ -482,6 +497,7 @@ Campos principais:
 
 Tipos principais:
 
+```typescript
 "home_hero"
 "home_how_it_works"
 "home_product_highlight"
@@ -495,6 +511,7 @@ Tipos principais:
 "faq_preview"
 "social_proof"
 "generic"
+```
 
 Dependências:
 - M1 Categorias;
@@ -528,7 +545,8 @@ Critérios de aceite:
 ### 8.9. M8 — Pedidos
 **Coleção:** `orders`
 
-Objetivo: permitir ao Admin acompanhar pedidos, visualizar detalhes e alterar status manualmente com histórico/auditoria.
+Objetivo:
+Permitir ao Admin acompanhar pedidos, visualizar detalhes e alterar status manualmente com histórico/auditoria.
 
 Escopo MVP:
 - listagem de pedidos;
@@ -544,6 +562,7 @@ Escopo MVP:
 
 Status:
 
+```typescript
 "pending_payment"
 "confirmed"
 "in_production"
@@ -552,12 +571,18 @@ Status:
 "delivered"
 "cancelled"
 "refunded"
+```
 
 Critérios de aceite:
 - lista filtrável por status;
 - lista filtrável por data de entrega;
 - detalhe exibe snapshot do pedido;
-- mudança de status grava: `from`; `to`; `changedAt`; `changedBy`; `reason`;
+- mudança de status grava:
+  - `from`;
+  - `to`;
+  - `changedAt`;
+  - `changedBy`;
+  - `reason`;
 - cancelamento exige motivo;
 - frontend nunca marca pagamento como aprovado por conta própria;
 - tela deixa claro quando confirmação deveria vir do Backend/webhook;
@@ -684,14 +709,11 @@ Mitigação:
 - `revere-admin` criado e com base técnica inicial.
 
 ### 12.2. Ainda pendentes
-- validação desta SPEC-004 por Caio/Psiu;
-- retorno do M0 pelo Agente CLI — recebido em 2026-06-01 com commits `2c8f390` e `b03199c`; QA do Raptor VSCode concluída em 2026-06-01 (P-026) e M0 marcado como concluído;
-- retorno do Agente Raptor VSCode sobre prontidão do `revere-admin` — validado em 2026-06-01: gates passaram, rotas base existem e ainda não há CRUD/camada de dados real;
-- retorno do Agente Gemini Cloud sobre plano Cloud/Firebase — validado em 2026-06-01: M0 pode avançar com Firestore/Auth e sem Storage/Functions; checkout, pagamento e validações críticas dependem de Blaze/Cloud Functions;
-- retorno do Agente Gemini Cloud sobre Firebase Emulators — validado em 2026-06-01: M0 deve priorizar Auth Emulator e Firestore Emulator para desenvolvimento local seguro; Storage Emulator é opcional/futuro, pois upload real está fora do escopo;
-- billing/Blaze para Cloud Functions e Storage;
-- decisão posterior de quando iniciar upload real de imagens;
-- decisão posterior de quando implementar Backend de validação crítica.
+- GOV-000 precisa fechar antes de retomar evolução técnica em código.
+- billing/Blaze para Cloud Functions e Storage segue bloqueado em P-012.
+- Firestore real no Admin M3-M6 permanece como pendência técnica derivada em P-048.
+- Rules v2 alinhada à SPEC-003 permanece pendente em P-033.
+- Upload real de imagens e Backend de validação crítica seguem fora do escopo imediato.
 
 ---
 
@@ -732,33 +754,21 @@ Regra:
 ---
 
 ## 14. Próxima implementação recomendada
-M0 foi concluído e validado (QA do Raptor VSCode, 2026-06-01). A próxima implementação recomendada continua sendo:
+M0-M8 foram concluídos, validados e mergeados em `origin/main`, e o GOV-000 foi fechado.
 
-M1 — Categorias  (em seguida M2 — Tags)
-
-Antes de executar M1, aplicar P-025 — refinamento final de clareza da SPEC-004 para M1/M2, especialmente default de status, precedência de inativo, política sem delete físico, slug compartilhado e `parentCategoryId` oculto no MVP.
-
-O M0 entregue preparou:
-- estrutura de rotas protegidas;
-- layout administrativo;
-- navegação;
-- camada Firestore;
-- conexão segura com Auth Emulator e Firestore Emulator em ambiente local;
-- padrão de formulários;
-- validação;
-- auditoria;
-- componentes base.
-
-Com o refinamento aplicado e o Agente CLI com créditos novamente, M1 Categorias entra primeiro, seguido de M2 Tags, cada um com QA do Raptor antes de avançar.
+Pontos técnicos remanescentes fora desta SPEC:
+- P-048 registra a necessidade futura de substituir a camada mock/in-memory por Firestore real nos módulos M3-M6.
+- P-033 registra a necessidade de Rules v2 alinhada à SPEC-003.
+- P-012 mantém Cloud Functions e Storage bloqueados até upgrade Blaze.
 
 ---
 
 ## 15. Checklist de validação desta SPEC
 Esta SPEC será considerada pronta para guiar implementação quando:
-- [x] Caio validar a decomposição M0–M8.
+- [x] Caio validar a decomposição M0-M8.
 - [x] Psiu validar os retornos do Raptor VSCode e Gemini Cloud.
 - [x] A Central de Pendências apontar M0 como próxima tarefa operacional.
-- [x] O Playbook refletir a ordem M0–M8.
+- [x] O Playbook refletir a ordem M0-M8.
 - [x] O primeiro prompt de implementação do M0 estiver preparado.
 - [x] Ficar claro que checkout, Backend, Storage e Mercado Pago não entram em M0.
 
@@ -770,4 +780,5 @@ A Fase 4.2 é o ponto em que o projeto começa a sair da governança pura e entr
 Por isso, esta SPEC existe para evitar que os agentes implementem "um CRUD genérico" sem respeitar a estratégia da Revere.
 
 O Admin precisa nascer como ferramenta de operação, não apenas como formulário técnico.
-ário técnico.
+
+A prioridade agora é construir uma base simples, segura e evolutiva, começando pela fundação e avançando módulo a módulo.

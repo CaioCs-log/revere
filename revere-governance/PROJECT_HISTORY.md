@@ -33,6 +33,16 @@
 
 ## Log
 
+### 2026-06-05 — DOC-002 Espelhamento de canônicos do Notion
+
+- O que foi feito:
+  - Conferida a árvore real de `revere-governance` antes da escrita.
+  - Reespelhadas do Notion as versões canônicas de `SPEC-004`, `ADR-0003` e do topo/status da `SPEC-003`.
+  - Criados os arquivos `specs/DESIGN-001-design-system.md`, `specs/COPY-001-home-storefront.md` e `specs/SPEC-RULES-v2-firestore.md`.
+  - Atualizado `features.json` para registrar o espelhamento documental concluído em 2026-06-05.
+- Próximo passo:
+  - Validar o diff documental desta rodada antes de qualquer push ou integração.
+
 ### 2026-06-03 — F2.1 Consolidar governança (3b36edd)
 
 - O que foi feito:

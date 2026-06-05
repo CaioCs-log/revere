@@ -1,28 +1,34 @@
-# VIGENTE — Schema v2 (fonte de verdade). Substitui a SPEC-001 (Schema v1, removida).
+# SPEC-003 — Firestore Schema v2 (Vigente) para o Site Revere
 
-# SPEC-003 — Firestore Schema v2 para o Site Revere
+> **Status: VIGENTE — fonte de verdade do schema (Schema v2).** Este documento substitui a SPEC-001 e é o schema canônico do Site Revere. A versão no repo foi reconciliada como `revere-governance/specs/SPEC-003-firestore-schema-v2.md` no monorepo privado `CaioCs-log/revere`.
 
 ## Metadados
 
-- **Arquivo:** `specs/SPEC-003-firestore-schema-v2.md`
+- **Arquivo versionado:** `revere-governance/specs/SPEC-003-firestore-schema-v2.md`
 - **Projeto:** Site Revere
-- **Repo:** `revere-governance`
+- **Repo de destino:** `revere-governance`
 - **Tipo:** SPEC técnica/documental
-- **Status:** Aprovada para versionamento
+- **Status:** Versionada no `revere-governance`
 - **Data:** 2026-06-01
 - **Responsável pela validação:** Caio Cesar Dos Santos
-- **Escopo desta entrega:** documentação do schema Firestore v1
+- **Escopo desta entrega:** documentação do schema Firestore v2 (vigente)
 - **Não inclui:** implementação, regras Firestore, backend, Admin ou Storefront
 
 ---
 
 ## 2. Status
 
-**Aprovada para versionamento.**
+**Versionada no `revere-governance`.**
 
-Esta SPEC foi validada por Caio e versionada em `revere-governance/specs/SPEC-003-firestore-schema-v2.md`.
+Esta SPEC foi validada por Caio/Psiu e versionada como `revere-governance/specs/SPEC-003-firestore-schema-v2.md`.
 
-A aprovação autoriza apenas o versionamento documental da SPEC no repo de governança. Não autoriza implementação de CRUD, backend, regras Firestore, Admin ou Storefront sem SPEC/tarefa própria.
+Commit de versionamento:
+
+```plain text
+3b36edd docs(specs): versiona schema v2 (SPEC-003), remove schema v1 (SPEC-001) e marca status
+```
+
+Este versionamento autoriza apenas o uso documental da SPEC como fonte de verdade para planejamento e próximas tarefas. Não autoriza implementação de CRUD, backend, regras Firestore, Admin ou Storefront sem SPEC/tarefa própria.
 
 ---
 
