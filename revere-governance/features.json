@@ -1,6 +1,6 @@
 {
   "project": "Site Revere",
-  "updatedAt": "2026-06-05",
+  "updatedAt": "2026-06-06",
   "features": [
     {
       "id": "F001",
@@ -71,6 +71,16 @@
       "specs": ["SPEC-003", "SPEC-004"],
       "adrs": [],
       "notes": "SPEC-004 reespelhada do Notion em 2026-06-05 refletindo M0-M8 concluídos, validados e mergeados em origin/main; GOV-000 fechado."
+    },
+    {
+      "id": "F008",
+      "name": "AI-OPS v2 automation harness",
+      "status": "in-progress",
+      "phase": "Governança operacional",
+      "repo": "ai-ops",
+      "specs": ["SPEC-TEMPLATE"],
+      "adrs": ["ADR-0004"],
+      "notes": "Camada de SPECs automatizáveis, matriz versionada de agentes, adaptadores por ferramenta, workflow de validação e mapa operacional para cadeia supervisionada de agentes."
     }
   ]
 }

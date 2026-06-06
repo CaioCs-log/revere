@@ -28,7 +28,8 @@ Antes de executar tarefa relevante, verifique Notion + GitHub. Mudanças técnic
 - Firestore real no Admin: P-048 pronta em branch técnica, mas bloqueada para validação por falta de Java/JRE no host do Emulator. Desbloqueio: ENV-001.
 - Cloud Functions e Storage: bloqueados até upgrade Blaze, região e budgets autorizados por Caio. Não implemente nada que dependa de Functions/Storage sem autorização explícita.
 - Rules v2: decisões de segurança aprovadas e documentadas em `revere-governance/specs/SPEC-RULES-v2-firestore.md`; implementação/deploy de `firestore.rules` continua fora do escopo sem rodada técnica própria.
-- AI-OPS: camada mínima implementada e mergeada; comando canônico de validação definido como `bash scripts/verify.sh`.
+- AI-OPS: camada mínima implementada e mergeada; AI-OPS v2 em implantação para SPECs automatizáveis, matriz versionada de agentes e cadeia supervisionada.
+- Cadeia de agentes: permitida apenas em modo supervisionado, por contrato explícito, sem merge/push/deploy/conclusão automática.
 
 ## Specs e decisões vigentes
 
@@ -39,6 +40,7 @@ Fontes técnicas principais em `revere-governance/`:
 - `specs/SPEC-RULES-v2-firestore.md` — proposta/aprovação documental das Rules v2 para implementação futura.
 - `specs/DESIGN-001-design-system.md` — design system Revere.
 - `specs/COPY-001-home-storefront.md` — copy/microcopy da Home.
+- `docs/project-map.md` — mapa operacional Notion + repo + agentes.
 - `decisions/ADR-0001-stack-e-repos.md`.
 - `decisions/ADR-0002-entrega-frete-agenda.md`.
 - `decisions/ADR-0003-pricing-kits-cupons.md`.
@@ -93,6 +95,14 @@ Se o comando não existir, estiver indisponível ou não cobrir o escopo, regist
 
 Observação: `scripts/verify.sh` pode bloquear alterações em arquivos protegidos. Se a tarefa autorizar explicitamente um arquivo protegido, registre isso no PR como exceção revisada por humano.
 
+Para SPECs novas/alteradas com metadados AI-OPS, rode:
+
+```bash
+node scripts/validate-spec-metadata.mjs --changed
+```
+
+SPECs legadas podem permanecer sem frontmatter até migração própria. SPECs novas devem usar o template em `revere-governance/specs/SPEC-TEMPLATE.md`.
+
 ## Arquivos e caminhos protegidos
 
 Exigem autorização explícita e revisão humana reforçada:
@@ -146,6 +156,8 @@ Peça decisão humana antes de:
 - alterar Firebase, Firestore Rules, Storage, Cloud Functions ou CI crítica;
 - instalar dependências;
 - marcar tarefa como concluída.
+- acionar outro agente sem contrato explícito;
+- permitir cadeia automática sem estado registrado no repo/PR.
 
 ## Entregável de cada tarefa
 
