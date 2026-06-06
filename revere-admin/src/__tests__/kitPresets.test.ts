@@ -1,18 +1,20 @@
 import { beforeEach, describe, expect, it } from "vitest";
+import { collection, getDocs } from "firebase/firestore";
 import {
   archiveKitPreset,
   createKitPreset,
   getKitPresets,
-  resetKitPresets,
 } from "@/lib/data/kitPresets";
 import { createProduct } from "@/lib/data/products";
-import { createVariant, resetVariants } from "@/lib/data/productVariants";
+import { createVariant } from "@/lib/data/productVariants";
 import {
   defaultKitDiscountTiers,
   kitPresetSchema,
   KitPresetInput,
 } from "@/lib/validation/kitPreset";
 import { ProductInput } from "@/lib/validation/product";
+import { clearFirestoreEmulator } from "./firestoreTestUtils";
+import { getDb } from "@/lib/firebase/client";
 
 const buildProduct = (overrides: Partial<ProductInput> = {}): ProductInput => ({
   name: "Produto Base",
@@ -41,8 +43,7 @@ const buildProduct = (overrides: Partial<ProductInput> = {}): ProductInput => ({
 
 describe("M6 — KitPresets Data Layer", () => {
   beforeEach(() => {
-    resetKitPresets();
-    resetVariants();
+    return clearFirestoreEmulator();
   });
 
   it("should create a customizable kit with fixed MVP discount tiers", async () => {
@@ -90,6 +91,10 @@ describe("M6 — KitPresets Data Layer", () => {
     expect(created.id).toBeDefined();
     expect(created.discountTiers).toEqual(defaultKitDiscountTiers);
     expect(created.createdBy).toBeDefined();
+
+    const snapshot = await getDocs(collection(getDb(), "kitPresets"));
+    expect(snapshot.docs).toHaveLength(1);
+    expect(snapshot.docs[0]?.data().slug).toBe("kit-customizavel");
   });
 
   it("should reject duplicate slugs", async () => {

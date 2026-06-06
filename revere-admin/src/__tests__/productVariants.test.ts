@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
+import { collection, getDocs } from "firebase/firestore";
 import {
-  resetVariants,
   createVariant,
   updateVariant,
   archiveVariant,
@@ -9,10 +9,12 @@ import {
 import { createProduct } from "@/lib/data/products";
 import { ProductInput } from "@/lib/validation/product";
 import { productVariantSchema } from "@/lib/validation/productVariant";
+import { clearFirestoreEmulator } from "./firestoreTestUtils";
+import { getDb } from "@/lib/firebase/client";
 
 describe("ProductVariants Data Layer", () => {
-  beforeEach(() => {
-    resetVariants();
+  beforeEach(async () => {
+    await clearFirestoreEmulator();
   });
 
   it("should create, update and archive a variant", async () => {
@@ -58,6 +60,10 @@ describe("ProductVariants Data Layer", () => {
     });
 
     expect(variant.id).toBeDefined();
+
+    const snapshot = await getDocs(collection(getDb(), "productVariants"));
+    expect(snapshot.docs).toHaveLength(1);
+    expect(snapshot.docs[0]?.data().sku).toBe("SKU-A");
 
     const updated = await updateVariant(variant.id, { name: "Variant A2" });
     expect(updated.name).toBe("Variant A2");

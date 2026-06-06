@@ -2,6 +2,8 @@
 
 import React from "react";
 import { PageHeader } from "@/components/admin/PageHeader";
+import { ErrorState } from "@/components/admin/ErrorState";
+import { LoadingState } from "@/components/admin/LoadingState";
 import { NeighborhoodForm } from "@/components/admin/neighborhoods/NeighborhoodForm";
 import {
   getNeighborhoodById,
@@ -52,8 +54,14 @@ export default function EditNeighborhoodPage() {
     }
   };
 
-  if (isLoading) return <div>Carregando...</div>;
-  if (!initial) return <div>Bairro não encontrado.</div>;
+  if (isLoading) return <LoadingState />;
+  if (!initial)
+    return (
+      <ErrorState
+        message="Bairro não encontrado."
+        onRetry={() => window.location.reload()}
+      />
+    );
 
   return (
     <div className="space-y-6">

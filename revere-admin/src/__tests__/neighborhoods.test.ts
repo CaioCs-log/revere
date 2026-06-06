@@ -1,17 +1,19 @@
 import { describe, it, expect, beforeEach } from "vitest";
+import { collection, getDocs } from "firebase/firestore";
 import {
   createNeighborhood,
   getNeighborhoods,
   checkSlugUnique,
   updateNeighborhood,
-  resetNeighborhoods,
 } from "@/lib/data/neighborhoods";
 import { neighborhoodSchema, DeliveryDay } from "@/lib/validation/neighborhood";
 import type { Neighborhood } from "@/lib/validation/neighborhood";
+import { clearFirestoreEmulator } from "./firestoreTestUtils";
+import { getDb } from "@/lib/firebase/client";
 
 describe("M5 — Neighborhoods Data Layer", () => {
-  beforeEach(() => {
-    resetNeighborhoods();
+  beforeEach(async () => {
+    await clearFirestoreEmulator();
   });
 
   const mockNeighborhood = {
@@ -39,6 +41,10 @@ describe("M5 — Neighborhoods Data Layer", () => {
     );
     expect(created.deliveryFeeCents).toBe(1500);
     expect(created.city).toBe("Blumenau");
+
+    const snapshot = await getDocs(collection(getDb(), "neighborhoods"));
+    expect(snapshot.docs).toHaveLength(1);
+    expect(snapshot.docs[0]?.data().slug).toBe("velha");
   });
 
   it("should prevent duplicate slugs", async () => {

@@ -1,25 +1,52 @@
-/**
- * FOUNDATION MOCK: Client-side Firebase initialization.
- * Actual configuration will be added when .env and billing are ready.
- */
+import { FirebaseApp, getApp, getApps, initializeApp } from "firebase/app";
+import {
+  Firestore,
+  connectFirestoreEmulator,
+  getFirestore,
+} from "firebase/firestore";
 
 export const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "mock-api-key",
-  authDomain:
-    process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "mock-auth-domain",
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "local-dev-api-key",
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "localhost",
   projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "revere-dev",
-  storageBucket:
-    process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "mock-bucket",
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "localhost",
   messagingSenderId:
-    process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "mock-sender",
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "mock-app-id",
+    process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "local-sender",
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "local-app-id",
 };
 
-// In the future, we will initialize app and firestore here
-// import { initializeApp, getApps, getApp } from "firebase/app";
-// import { getFirestore } from "firebase/firestore";
+let firestoreInstance: Firestore | null = null;
+let emulatorConnected = false;
 
-// const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
-// export const db = getFirestore(app);
+const shouldUseFirestoreEmulator = () =>
+  (process.env.NEXT_PUBLIC_USE_FIRESTORE_EMULATOR || "true") !== "false";
 
-export const dbPlaceholder = "Firestore DB Placeholder";
+const getEmulatorHost = () =>
+  process.env.NEXT_PUBLIC_FIRESTORE_EMULATOR_HOST || "127.0.0.1";
+
+const getEmulatorPort = () =>
+  Number(process.env.NEXT_PUBLIC_FIRESTORE_EMULATOR_PORT || "8080");
+
+export const getFirebaseApp = (): FirebaseApp =>
+  getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+
+export const getDb = (): Firestore => {
+  if (!firestoreInstance) {
+    firestoreInstance = getFirestore(getFirebaseApp());
+  }
+
+  if (shouldUseFirestoreEmulator() && !emulatorConnected) {
+    connectFirestoreEmulator(
+      firestoreInstance,
+      getEmulatorHost(),
+      getEmulatorPort(),
+    );
+    emulatorConnected = true;
+  }
+
+  return firestoreInstance;
+};
+
+export const getFirebaseProjectId = () => firebaseConfig.projectId;
+
+export const isUsingFirestoreEmulator = () => shouldUseFirestoreEmulator();

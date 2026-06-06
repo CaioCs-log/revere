@@ -9,8 +9,25 @@ import {
   defaultKitDiscountTiers,
   KitPresetInput,
 } from "@/lib/validation/kitPreset";
+import {
+  addDoc,
+  collection,
+  doc,
+  updateDoc,
+  QueryDocumentSnapshot,
+} from "firebase/firestore";
+import { getDb } from "@/lib/firebase/client";
+import {
+  fieldValueExists,
+  getCollectionDocuments,
+  getDocumentById,
+  readBoolean,
+  readDate,
+  readNullableString,
+  readNumber,
+} from "@/lib/firebase/firestoreHelpers";
 
-const kitPresets: KitPreset[] = [];
+const KIT_PRESETS_COLLECTION = "kitPresets";
 
 const isActiveAndVisibleProduct = (product?: Product) =>
   Boolean(product && product.status === "active" && product.isVisible);
@@ -84,7 +101,7 @@ const validateKitReferences = async (
 };
 
 const validateBusinessRules = async (data: KitPresetInput) => {
-  if (kitPresets.some((kit) => kit.slug === data.slug)) {
+  if (await fieldValueExists(KIT_PRESETS_COLLECTION, "slug", data.slug)) {
     throw new Error("Slug já existe. Escolha um slug diferente.");
   }
 
@@ -105,14 +122,99 @@ const validateBusinessRules = async (data: KitPresetInput) => {
   await validateKitReferences(data, data.status === "active");
 };
 
+const mapKitPreset = (snapshot: QueryDocumentSnapshot): KitPreset => {
+  const data = snapshot.data();
+
+  return {
+    id: snapshot.id,
+    name: typeof data.name === "string" ? data.name : "",
+    slug: typeof data.slug === "string" ? data.slug : "",
+    status:
+      data.status === "draft" ||
+      data.status === "active" ||
+      data.status === "inactive" ||
+      data.status === "archived"
+        ? data.status
+        : "draft",
+    shortDescription:
+      typeof data.shortDescription === "string" ? data.shortDescription : "",
+    description: typeof data.description === "string" ? data.description : "",
+    imageId: readNullableString(data.imageId),
+    imageAlt: readNullableString(data.imageAlt),
+    imageMode:
+      data.imageMode === "real_photo" ||
+      data.imageMode === "brand_placeholder" ||
+      data.imageMode === "editorial" ||
+      data.imageMode === "illustration"
+        ? data.imageMode
+        : "brand_placeholder",
+    kitType:
+      data.kitType === "fixed" ||
+      data.kitType === "suggested" ||
+      data.kitType === "customizable"
+        ? data.kitType
+        : "fixed",
+    eligibleProductTypes: Array.isArray(data.eligibleProductTypes)
+      ? data.eligibleProductTypes
+      : [],
+    allowRepeatedItems: readBoolean(data.allowRepeatedItems, true),
+    items: Array.isArray(data.items) ? data.items : [],
+    minItems: readNumber(data.minItems, 7),
+    maxItems: typeof data.maxItems === "number" ? data.maxItems : null,
+    pricingMode:
+      data.pricingMode === "fixed_price" || data.pricingMode === "sum_items"
+        ? data.pricingMode
+        : "sum_items",
+    fixedPriceCents:
+      typeof data.fixedPriceCents === "number" ? data.fixedPriceCents : null,
+    discountTiers: Array.isArray(data.discountTiers) ? data.discountTiers : [],
+    grantsFreeShipping: readBoolean(data.grantsFreeShipping),
+    isFeatured: readBoolean(data.isFeatured),
+    sortOrder: readNumber(data.sortOrder),
+    createdAt: readDate(data.createdAt),
+    updatedAt: readDate(data.updatedAt),
+    createdBy: typeof data.createdBy === "string" ? data.createdBy : "system",
+    updatedBy: typeof data.updatedBy === "string" ? data.updatedBy : "system",
+  };
+};
+
+const toKitPresetInput = (kit: KitPreset): KitPresetInput => ({
+  name: kit.name,
+  slug: kit.slug,
+  status: kit.status,
+  shortDescription: kit.shortDescription,
+  description: kit.description,
+  imageId: kit.imageId,
+  imageAlt: kit.imageAlt,
+  imageMode: kit.imageMode,
+  kitType: kit.kitType,
+  eligibleProductTypes: kit.eligibleProductTypes,
+  allowRepeatedItems: kit.allowRepeatedItems,
+  items: kit.items,
+  minItems: kit.minItems,
+  maxItems: kit.maxItems,
+  pricingMode: kit.pricingMode,
+  fixedPriceCents: kit.fixedPriceCents,
+  discountTiers: kit.discountTiers,
+  grantsFreeShipping: kit.grantsFreeShipping,
+  isFeatured: kit.isFeatured,
+  sortOrder: kit.sortOrder,
+});
+
 export const getKitPresets = async (): Promise<KitPreset[]> => {
-  return Promise.resolve(kitPresets.filter((kit) => kit.status !== "archived"));
+  const kits = await getCollectionDocuments(
+    KIT_PRESETS_COLLECTION,
+    mapKitPreset,
+  );
+  return kits
+    .filter((kit) => kit.status !== "archived")
+    .sort((left, right) => left.sortOrder - right.sortOrder);
 };
 
 export const getKitPresetById = async (
   id: string,
 ): Promise<KitPreset | undefined> => {
-  return Promise.resolve(kitPresets.find((kit) => kit.id === id));
+  return getDocumentById(KIT_PRESETS_COLLECTION, id, mapKitPreset);
 };
 
 export const createKitPreset = async (
@@ -123,33 +225,38 @@ export const createKitPreset = async (
   const user = await getCurrentUser();
   const userId = user?.uid || "system";
 
-  const newKitPreset: KitPreset = {
-    id: `kit-${Date.now()}`,
+  const payload = {
     ...data,
     ...createAuditFields(userId),
   };
 
-  kitPresets.push(newKitPreset);
-  return Promise.resolve(newKitPreset);
+  const reference = await addDoc(
+    collection(getDb(), KIT_PRESETS_COLLECTION),
+    payload,
+  );
+  const created = await getKitPresetById(reference.id);
+  if (!created) throw new Error("Erro ao carregar kit recém-criado.");
+
+  return created;
 };
 
 export const updateKitPreset = async (
   id: string,
   data: Partial<KitPresetInput>,
 ): Promise<KitPreset> => {
-  const index = kitPresets.findIndex((kit) => kit.id === id);
-  if (index === -1) {
+  const existing = await getKitPresetById(id);
+  if (!existing) {
     throw new Error("Kit não encontrado.");
   }
 
   const nextValue: KitPresetInput = {
-    ...kitPresets[index],
+    ...toKitPresetInput(existing),
     ...data,
   };
 
   if (
     data.slug &&
-    kitPresets.some((kit) => kit.slug === data.slug && kit.id !== id)
+    (await fieldValueExists(KIT_PRESETS_COLLECTION, "slug", data.slug, id))
   ) {
     throw new Error("Slug já existe. Escolha um slug diferente.");
   }
@@ -174,13 +281,17 @@ export const updateKitPreset = async (
   const userId = user?.uid || "system";
 
   const updatedKitPreset: KitPreset = {
-    ...kitPresets[index],
+    ...existing,
     ...data,
     ...updateAuditFields(userId),
   };
 
-  kitPresets[index] = updatedKitPreset;
-  return Promise.resolve(updatedKitPreset);
+  await updateDoc(doc(getDb(), KIT_PRESETS_COLLECTION, id), {
+    ...data,
+    ...updateAuditFields(userId),
+  });
+
+  return updatedKitPreset;
 };
 
 export const archiveKitPreset = async (id: string): Promise<KitPreset> => {
@@ -189,10 +300,6 @@ export const archiveKitPreset = async (id: string): Promise<KitPreset> => {
 
 export const inactivateKitPreset = async (id: string): Promise<KitPreset> => {
   return updateKitPreset(id, { status: "inactive" });
-};
-
-export const resetKitPresets = () => {
-  kitPresets.length = 0;
 };
 
 export const isKitVisibleForSale = (kit: KitPreset) => kit.status === "active";

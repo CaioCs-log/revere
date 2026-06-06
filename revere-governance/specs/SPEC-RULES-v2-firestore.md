@@ -1,12 +1,14 @@
 # Proposta — Firestore Rules v2
 
 ## Objetivo
+
 Rascunhar uma proposta de **Firestore Rules v2** para o Site Revere, reconciliando a `SPEC-002 — Firestore Rules v1` com o schema vigente da `SPEC-003 — Firestore Schema v2`.
 
 Esta página é uma proposta documental. Ela **não implementa** `firestore.rules`, não altera repositórios e não substitui validação de Backend/Cloud Functions quando a frente Blaze/Functions for destravada.
 
 > **Decisões aprovadas por Caio — 2026-06-05 00:12 BRT (P-033)**
 > As 4 pendências da proposta foram decididas e **confirmam o arquivo `firestore.rules` v2 exatamente como está** — nenhuma alteração no código das regras é necessária.
+>
 > 1. **Cupons:** leitura **admin-only** (Opção A). Cliente não lê `coupons`; toda validação de cupom fica no Backend.
 > 2. **Mudança de `role`:** **somente o `owner` (Caio)**. Admin não altera `role` de ninguém.
 > 3. **Edição de pedido pelo cliente (`notes.customerNote`):** **não** no MVP. Após o pedido gerado, qualquer alteração passa pelo atendimento; reavaliar a necessidade no futuro.
@@ -17,6 +19,7 @@ Esta página é uma proposta documental. Ela **não implementa** `firestore.rule
 ---
 
 ## Status
+
 - **Tipo:** proposta documental
 - **Fase:** segurança / governança
 - **Origem:** P-033 — Produzir Rules v2 alinhada à SPEC-003
@@ -28,6 +31,7 @@ Esta página é uma proposta documental. Ela **não implementa** `firestore.rule
 ---
 
 ## Principais correções em relação à Rules v1
+
 A Rules v2 deve corrigir os seguintes desalinhamentos da SPEC-002:
 
 1. **Autorização administrativa**
@@ -58,11 +62,13 @@ A Rules v2 deve corrigir os seguintes desalinhamentos da SPEC-002:
 ---
 
 ## Modelo de papéis
+
 ```typescript
-role: "customer" | "admin" | "owner"
+role: "customer" | "admin" | "owner";
 ```
 
 ### Regras conceituais
+
 - `customer`: usuário autenticado comum.
 - `admin`: pode operar o Admin, catálogo, conteúdo, pedidos e configurações operacionais.
 - `owner`: pode operar como admin e, futuramente, administrar permissões sensíveis.
@@ -70,6 +76,7 @@ role: "customer" | "admin" | "owner"
 - Em produção futura, migrar para custom claims como blindagem adicional quando Cloud Functions/Blaze estiverem disponíveis.
 
 ### Helpers conceituais para Rules
+
 ```javascript
 function signedIn() {
   return request.auth != null;
@@ -103,7 +110,9 @@ Observação: a implementação final deve validar o custo e a viabilidade dos `
 ---
 
 ## Coleções públicas de leitura
+
 As coleções abaixo podem ter leitura pública limitada ao conteúdo publicável:
+
 - `products`
 - `productVariants`
 - `categories`
@@ -113,9 +122,11 @@ As coleções abaixo podem ter leitura pública limitada ao conteúdo publicáve
 - `siteContent`
 
 ### Regra conceitual
+
 O público pode ler apenas documentos em estado publicável.
 
 Exemplos:
+
 - `products`: ler se `status == "active"` e `isVisible == true`.
 - `productVariants`: ler se `status == "active"` e `isVisible == true`.
 - `categories`: ler se `status == "active"`.
@@ -125,6 +136,7 @@ Exemplos:
 - `siteContent`: ler se `status == "published"` e respeitar janela de publicação no Storefront/Backend.
 
 ### Escrita
+
 - Escrita nessas coleções: somente `admin` ou `owner`.
 - Delete físico: bloquear no MVP.
 - Remoção operacional: via `status`, `isVisible` ou equivalente, preservando histórico e integridade referencial.
@@ -134,7 +146,9 @@ Exemplos:
 ## Coleções administrativas
 
 ### `coupons`
+
 Recomendação para v2:
+
 - leitura pública: **não recomendada**;
 - leitura por cliente autenticado: opcional e limitada, se necessário para UX;
 - validação real: Backend;
@@ -144,7 +158,9 @@ Recomendação para v2:
 Motivo: cupons afetam preço e podem expor regras comerciais.
 
 ### Configurações futuras
+
 Se houver documentos de configuração (`config/*`) no futuro:
+
 - leitura pública apenas para configurações não sensíveis;
 - escrita somente `admin` ou `owner`;
 - cálculos finais de frete, cupom, desconto e total continuam no Backend.
@@ -154,16 +170,20 @@ Se houver documentos de configuração (`config/*`) no futuro:
 ## `users/{uid}`
 
 ### Leitura
+
 - O próprio usuário pode ler seu documento.
 - `admin` e `owner` podem ler usuários para operação, suporte e auditoria.
 
 ### Criação
+
 - Usuário autenticado pode criar apenas o próprio documento: `request.auth.uid == uid`.
 - Na criação por cliente, `role` deve ser sempre `customer` ou ausente com default seguro aplicado pela aplicação controlada.
 - Cliente não pode criar `role: "admin"` nem `role: "owner"`.
 
 ### Atualização pelo cliente
+
 Cliente pode atualizar apenas campos seguros do próprio perfil, como:
+
 - `name`
 - `phone`
 - `birthDate`
@@ -174,6 +194,7 @@ Cliente pode atualizar apenas campos seguros do próprio perfil, como:
 - `privacyAcceptedAt`
 
 Cliente **não pode** alterar:
+
 - `role`
 - `status` para se desbloquear
 - `pointsBalance`
@@ -183,11 +204,13 @@ Cliente **não pode** alterar:
 - campos de auditoria protegidos
 
 ### Atualização por admin/owner
+
 - `admin` e `owner` podem atualizar dados operacionais necessários.
 - Mudança de `role` deve ser restrita ao `owner` ou, preferencialmente, ao Backend/Admin SDK.
 - Bloqueio/desbloqueio de usuário deve ser `owner` ou fluxo administrativo controlado.
 
 ### LGPD
+
 - Restrições alimentares e preferências sensíveis não entram no MVP.
 - Se forem adicionadas no futuro, exigem consentimento explícito, política própria e revisão técnica/jurídica.
 
@@ -196,13 +219,16 @@ Cliente **não pode** alterar:
 ## `orders/{orderId}`
 
 ### Leitura
+
 - Cliente autenticado pode ler apenas pedidos em que `resource.data.userId == request.auth.uid`.
 - `admin` e `owner` podem ler todos os pedidos.
 
 ### Criação
+
 A recomendação mais segura é que pedidos reais sejam criados pelo Backend.
 
 Enquanto não houver Backend final:
+
 - cliente autenticado só pode criar pedido com `userId == request.auth.uid`;
 - pedido deve nascer como `pending_payment`;
 - cliente não pode marcar pagamento como aprovado;
@@ -210,9 +236,11 @@ Enquanto não houver Backend final:
 - valores enviados pelo cliente não devem ser tratados como fonte final de verdade.
 
 ### Atualização pelo cliente
+
 Cliente não deve atualizar campos críticos do pedido.
 
 Bloquear para cliente:
+
 - `status`
 - `payment`
 - `pricing`
@@ -227,23 +255,27 @@ Bloquear para cliente:
 Se for necessário permitir alteração do cliente no MVP, limitar a campos de baixo risco antes do pagamento, como `notes.customerNote`.
 
 ### Atualização por admin/owner
+
 - `admin` e `owner` podem alterar status operacional.
 - Toda mudança de status deve registrar item em `statusHistory`.
 - Cancelamento exige motivo.
 - Correção manual de exceções é permitida, mas deve ficar auditável.
 
 ### Backend/webhook
+
 - Confirmação de pagamento Mercado Pago deve vir de Backend/webhook.
 - Admin SDK ignora Rules, portanto a segurança do fluxo de webhook deve ser tratada no Backend.
 - O frontend nunca marca pedido como pago ou confirmado.
 
 ### Delete
+
 - Delete físico bloqueado.
 - Cancelamento via `status = "cancelled"` com auditoria.
 
 ---
 
 ## `firestore.rules` — proposta completa (v2)
+
 Proposta de arquivo `firestore.rules` (texto, **sem deploy**) cobrindo todas as coleções da SPEC-003 e o modelo de autorização `users.role` (§16.7). Esta é a entrega revisável de P-033 — o revisor Codex aplica/valida em `revere-governance` e, em rodada técnica posterior, em `revere-backend`.
 
 ```javascript
@@ -421,6 +453,7 @@ service cloud.firestore {
 ```
 
 ### Notas de implementação do arquivo
+
 - **Listagens (`list`)**: as Rules avaliam `resource.data` por documento. Para o catálogo e para pedidos do cliente, o cliente precisa enviar os filtros corretos na query (`where(status/isVisible)` no catálogo; `where('userId','==', uid)` em pedidos). Queries sem filtro são negadas — isso é intencional e seguro.
 - **Custo de `get()`**: `isAdmin()`/`isOwner()` fazem um `get()` em `users/{uid}`. A condição pública aparece antes de `isAdmin()` para não gerar leitura extra em documentos públicos. O Firestore faz cache desses acessos por avaliação (limite de 10 acessos de documento por regra).
 - **Criação de usuário**: a app deve criar `users/{uid}` sem `role` elevado; `get('role','customer')` garante que cliente não nasça `admin`/`owner`.
@@ -430,23 +463,26 @@ service cloud.firestore {
 ---
 
 ## Matriz resumida de permissões
-| Coleção | Leitura pública | Cliente autenticado | Admin/Owner | Delete físico |
-| --- | --- | --- | --- | --- |
-| `products` | Ativos e visíveis | Ativos e visíveis | CRUD lógico | Bloqueado |
-| `productVariants` | Ativas e visíveis | Ativas e visíveis | CRUD lógico | Bloqueado |
-| `categories` | Ativas | Ativas | CRUD lógico | Bloqueado |
-| `tags` | Ativas públicas | Ativas públicas | CRUD lógico | Bloqueado |
-| `kitPresets` | Ativos | Ativos | CRUD lógico | Bloqueado |
-| `neighborhoods` | Ativos | Ativos | CRUD lógico | Bloqueado |
-| `siteContent` | Publicado | Publicado | CRUD lógico | Bloqueado |
-| `coupons` | Não recomendado | Limitado/opcional | CRUD lógico | Bloqueado |
-| `users` | Não | Somente próprio perfil | Operação/suporte | Bloqueado |
-| `orders` | Não | Somente próprios pedidos | Operação total auditada | Bloqueado |
+
+| Coleção           | Leitura pública   | Cliente autenticado      | Admin/Owner             | Delete físico |
+| ----------------- | ----------------- | ------------------------ | ----------------------- | ------------- |
+| `products`        | Ativos e visíveis | Ativos e visíveis        | CRUD lógico             | Bloqueado     |
+| `productVariants` | Ativas e visíveis | Ativas e visíveis        | CRUD lógico             | Bloqueado     |
+| `categories`      | Ativas            | Ativas                   | CRUD lógico             | Bloqueado     |
+| `tags`            | Ativas públicas   | Ativas públicas          | CRUD lógico             | Bloqueado     |
+| `kitPresets`      | Ativos            | Ativos                   | CRUD lógico             | Bloqueado     |
+| `neighborhoods`   | Ativos            | Ativos                   | CRUD lógico             | Bloqueado     |
+| `siteContent`     | Publicado         | Publicado                | CRUD lógico             | Bloqueado     |
+| `coupons`         | Não recomendado   | Limitado/opcional        | CRUD lógico             | Bloqueado     |
+| `users`           | Não               | Somente próprio perfil   | Operação/suporte        | Bloqueado     |
+| `orders`          | Não               | Somente próprios pedidos | Operação total auditada | Bloqueado     |
 
 ---
 
 ## Validações mínimas nas Rules
+
 Rules v2 deve validar, no mínimo:
+
 - autenticação para dados privados;
 - `request.auth.uid == uid` em `users/{uid}`;
 - cliente não altera `role`;
@@ -462,7 +498,9 @@ Rules v2 deve validar, no mínimo:
 ---
 
 ## O que NÃO deve depender apenas de Rules
+
 As Firestore Rules não devem ser a única defesa para:
+
 - cálculo de preço final;
 - desconto progressivo de kits;
 - cupom;
@@ -484,12 +522,14 @@ Esses pontos devem ser validados no Backend quando Cloud Functions/Blaze forem d
 ## Testes recomendados no Emulator
 
 ### Acesso público
+
 - Público lê apenas produtos ativos e visíveis.
 - Público não lê produto `draft`, `inactive` ou `archived`.
 - Público não lê variante invisível.
 - Público lê apenas `siteContent` publicado.
 
 ### Usuários
+
 - Cliente cria apenas `users/{seuUid}`.
 - Cliente não cria `role: "admin"` nem `role: "owner"`.
 - Cliente não altera `role`.
@@ -497,6 +537,7 @@ Esses pontos devem ser validados no Backend quando Cloud Functions/Blaze forem d
 - Admin lê usuários.
 
 ### Pedidos
+
 - Cliente lê apenas próprios pedidos.
 - Cliente não lê pedido de outro usuário.
 - Cliente não cria pedido para outro `userId`.
@@ -508,6 +549,7 @@ Esses pontos devem ser validados no Backend quando Cloud Functions/Blaze forem d
 - Delete físico de pedido é bloqueado.
 
 ### Admin
+
 - Admin cria/edita/inativa produtos, variantes, categorias, tags, kits, bairros e conteúdo.
 - Cliente comum não escreve em coleções administrativas.
 - Owner consegue executar ações sensíveis definidas para provisionamento.
@@ -515,6 +557,7 @@ Esses pontos devem ser validados no Backend quando Cloud Functions/Blaze forem d
 ---
 
 ## Critérios de aceite da futura Rules v2
+
 - [ ] Modelo de autorização via `users.role` documentado e implementado.
 - [ ] Cliente impedido de criar/alterar `role`.
 - [ ] `adminUsers` removido da estratégia vigente.
@@ -531,6 +574,7 @@ Esses pontos devem ser validados no Backend quando Cloud Functions/Blaze forem d
 ---
 
 ## Próximo encaminhamento recomendado
+
 1. Caio/Psiu revisam esta proposta.
 2. Agente CLI transforma a proposta aprovada em arquivo documental no `revere-governance`.
 3. Em rodada técnica posterior, implementar `firestore.rules` no `revere-backend`.

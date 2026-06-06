@@ -253,6 +253,7 @@ describe("MockRegistry - siteContent", () => {
       "home_product_highlight",
       "home_kit_highlight",
       "delivery_info",
+      "trust_block",
       "final_cta",
     ])
 
@@ -268,13 +269,14 @@ describe("MockRegistry - siteContent", () => {
     expect(blocks.find((b) => b.key === "home_hero_draft")).toBeUndefined()
   })
 
-  it("mock site content has the required 6 home blocks", () => {
+  it("mock site content has the required 7 home blocks", () => {
     const requiredKeys = [
       "home_hero",
       "home_how_it_works",
       "home_product_highlight",
       "home_kit_highlight",
       "delivery_info",
+      "trust_block",
       "final_cta",
     ]
     for (const key of requiredKeys) {

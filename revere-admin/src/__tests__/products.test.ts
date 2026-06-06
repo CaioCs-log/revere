@@ -1,4 +1,5 @@
-import { describe, it, expect } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
+import { collection, getDocs } from "firebase/firestore";
 import {
   getProducts,
   createProduct,
@@ -6,8 +7,14 @@ import {
   archiveProduct,
 } from "../lib/data/products";
 import { ProductInput } from "../lib/validation/product";
+import { clearFirestoreEmulator } from "./firestoreTestUtils";
+import { getDb } from "@/lib/firebase/client";
 
 describe("Products Data Layer", () => {
+  beforeEach(async () => {
+    await clearFirestoreEmulator();
+  });
+
   const mockProduct: ProductInput = {
     name: "Test Product",
     slug: "test-product",
@@ -37,6 +44,10 @@ describe("Products Data Layer", () => {
     expect(product.name).toBe(mockProduct.name);
     expect(product.id).toBeDefined();
     expect(product.createdAt).toBeDefined();
+
+    const snapshot = await getDocs(collection(getDb(), "products"));
+    expect(snapshot.docs).toHaveLength(1);
+    expect(snapshot.docs[0]?.data().slug).toBe(mockProduct.slug);
   });
 
   it("should not allow duplicate slugs", async () => {

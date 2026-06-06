@@ -49,6 +49,11 @@ export type SiteContentBlock = {
   updatedAt: string
 }
 
+export type Pillar = {
+  title: string
+  description: string
+}
+
 export function isPublishedSiteContent(
   block: SiteContentBlock,
   now: Date = new Date()
