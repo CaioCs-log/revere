@@ -25,13 +25,27 @@
 
 ## Estado atual (atualize sempre que encerrar uma tarefa)
 
-- Data: 2026-06-01
-- Fase atual: FASE 2 (Firebase Setup) / FASE 4.1 (Firestore Schema Design)
-- Em andamento: Finalização da documentação base de governança
-- Próximo passo: Iniciar FASE 4.2 (Admin-first CRUD) após validação técnica do schema
-- Riscos/travas: nenhum
+- Data: 2026-06-06
+- Fase atual: pre-MVP com Admin-first M0-M8, Storefront STORE-002, Backend BACK-001 e AI-OPS mínima concluídos.
+- Em andamento: estabilização operacional para AI-OPS v2, ENV-001/P-048 e preparação de STORE-003.
+- Próximo passo técnico: resolver ENV-001 (Java/JRE), subir Firestore Emulator e revalidar P-048.
+- Próximo passo de governança: consolidar AI-OPS v2 para SPECs automatizáveis e cadeia supervisionada de agentes.
+- Riscos/travas: Java/JRE ausente para Firestore Emulator; branch `triage/wip-local-p048-store-back` mistura Admin/Storefront/Backend/Governance; dependências com vulnerabilidades auditadas; Admin ainda usa auth mock; Cloud Functions/Storage seguem bloqueados por Blaze.
 
 ## Log
+
+### 2026-06-06 — GOV/AI-OPS v2 para SPECs e cadeia supervisionada
+
+- O que foi feito:
+  - Criada matriz versionada de agentes e ferramentas em `ai-ops/agent-routing.yaml`.
+  - Adicionados adaptadores para Codex, OpenCode, Cline/Roo-Cline, Psiu/Notion e GitHub Actions.
+  - Criados templates de contrato, revisão, verificação e frontmatter de SPEC em `ai-ops/templates/`.
+  - Criado `ai-ops/spec.schema.json` e script `scripts/validate-spec-metadata.mjs` para validar metadados de SPECs novas/alteradas.
+  - Adicionado workflow `.github/workflows/spec-validate.yml`.
+  - Atualizados `AGENTS.md`, `ai-ops/protocol.md`, `ai-ops/security.md`, template de PR e `SPEC-TEMPLATE.md`.
+  - Criado `revere-governance/docs/project-map.md` como mapa operacional Notion + repo + agentes.
+- Próximo passo:
+  - Abrir PR de governança, revisar exceções de arquivos protegidos e, após merge, usar essa base para ENV-001/P-048 e próximas SPECs.
 
 ### 2026-06-05 — DOC-002 Espelhamento de canônicos do Notion
 

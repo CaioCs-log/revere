@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposta
+Aceita
 
 ## Contexto
 
@@ -151,3 +151,14 @@ Esta ADR não autoriza:
 ## Critério de revisão
 
 Esta decisão deve ser revisada depois de novos pilotos AI-OPS, especialmente antes de liberar duas frentes paralelas ou usar agentes em tarefas de produto.
+
+## Revisão 2026-06-06 — AI-OPS v2
+
+A camada mínima foi mantida, mas a próxima expansão passa a exigir:
+
+- SPECs novas com metadados automatizáveis;
+- matriz versionada de agentes em `ai-ops/agent-routing.yaml`;
+- contratos explícitos por executor;
+- separação entre executor, revisor e verificador;
+- validação de SPEC via `node scripts/validate-spec-metadata.mjs --changed`;
+- cadeia de agentes apenas supervisionada, sem merge, push, deploy ou status `done` automático.

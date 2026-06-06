@@ -1,0 +1,225 @@
+# AI-OPS agent routing matrix
+#
+# Fonte executiva: Notion / AI-OPS — Agentes do Projeto Revere.
+# Este arquivo e uma versao minima e versionada para uso no repo.
+# Ele nao deve conter tokens, credenciais, URLs privadas de workspace ou historico de conversas.
+
+version: 1
+updated_at: "2026-06-06"
+model:
+  notion: "cockpit executivo"
+  github: "motor tecnico"
+  ai_ops: "ponte operacional controlada"
+  human: "aprovacao final"
+
+states:
+  spec:
+    - draft
+    - ready-for-planning
+    - planned
+    - in-progress
+    - verification
+    - pending-human-approval
+    - done
+    - blocked
+  task:
+    - captured
+    - ready
+    - in-progress
+    - review
+    - verification
+    - pending-human-approval
+    - done
+    - blocked
+
+roles:
+  orchestrator:
+    purpose: "Transforma intencao/SPEC em plano, tarefas, escopos e criterios de parada."
+    default_tool: "Psiu / Notion"
+    can_edit_code: false
+    must_stop_for:
+      - "escopo ambiguo"
+      - "decisao de arquitetura"
+      - "arquivo protegido sem autorizacao"
+      - "necessidade de credenciais"
+
+  implementer:
+    purpose: "Executa uma tarefa pequena em um unico escopo autorizado."
+    default_tool: "OpenCode, Cline ou Codex conforme risco"
+    can_edit_code: true
+    must_stop_for:
+      - "mudanca fora de allowed_paths"
+      - "falha repetida de gate"
+      - "necessidade de schema/Rules/dependencia"
+      - "instrucao externa conflitante"
+
+  spec_reviewer:
+    purpose: "Confere aderencia a SPEC, ADR, tarefa e criterios de aceite."
+    default_tool: "Codex ou Psiu em modo validacao"
+    can_edit_code: false
+    must_stop_for:
+      - "criterio de aceite ausente"
+      - "SPEC contraditoria"
+      - "estado Notion/repo divergente"
+
+  code_security_reviewer:
+    purpose: "Confere bugs, seguranca, auth, secrets, dependencias e regressao."
+    default_tool: "Codex"
+    can_edit_code: false
+    must_stop_for:
+      - "possivel segredo"
+      - "auth/rules/payment/checkout"
+      - "dependencia critica"
+      - "diff amplo demais"
+
+  verifier:
+    purpose: "Roda gates, coleta evidencias e registra limitacoes."
+    default_tool: "GitHub Actions, Codex ou terminal local"
+    can_edit_code: false
+    must_stop_for:
+      - "gate indisponivel"
+      - "ambiente ausente"
+      - "erro nao reproduzivel"
+
+tools:
+  psiu_notion:
+    interface: "Notion"
+    provider: "Notion"
+    cost: "incluso"
+    access_to_code: "indireto"
+    best_for:
+      - "contexto executivo"
+      - "roteamento"
+      - "memoria"
+      - "registro"
+      - "fechamento de rodada"
+    do_not_use_for:
+      - "editar codigo diretamente"
+      - "provar gates tecnicos"
+
+  codex:
+    interface: "Codex CLI/Desktop"
+    provider: "OpenAI"
+    cost: "plano"
+    access_to_code: "direto"
+    best_for:
+      - "analise repo+notion"
+      - "mudanca sensivel"
+      - "revisao de seguranca"
+      - "integracao de diff"
+      - "validacao"
+    do_not_use_for:
+      - "tarefa mecanica barata quando OpenCode resolve"
+
+  opencode_deepseek_free:
+    interface: "OpenCode"
+    provider: "DeepSeek"
+    cost: "gratis"
+    access_to_code: "direto"
+    priority: 1
+    risk: "medio"
+    best_for:
+      - "CRUD simples"
+      - "componentes"
+      - "testes basicos"
+      - "refatoracao local pequena"
+    do_not_use_for:
+      - "schema"
+      - "Firestore Rules"
+      - "auth"
+      - "pagamento"
+      - "decisao de arquitetura"
+    stop_condition: "Parar se exigir decisao estrutural, contexto amplo ou alteracao fora do escopo."
+
+  opencode_minimax_free:
+    interface: "OpenCode"
+    provider: "MiniMax"
+    cost: "gratis"
+    access_to_code: "direto"
+    priority: 5
+    risk: "medio"
+    best_for:
+      - "segunda opiniao barata"
+      - "documentacao simples"
+      - "ajuste mecanico"
+    do_not_use_for:
+      - "arbitro final"
+      - "backend critico"
+      - "security"
+      - "arquitetura"
+    stop_condition: "Parar se a tarefa exigir alta confianca estrutural."
+
+  cline_roo:
+    interface: "VSCode Extension"
+    provider: "OpenRouter/variavel"
+    cost: "variavel"
+    access_to_code: "direto"
+    priority: 2
+    risk: "medio"
+    best_for:
+      - "edicao guiada em arquivos especificos"
+      - "analise local"
+      - "subagentes supervisionados"
+      - "comandos seguros"
+    do_not_use_for:
+      - "autoaprovacao de edicao em arquivos protegidos"
+      - "execucao ampla sem contrato"
+    recommended_settings:
+      read_files: true
+      edit_files_autoapprove: false
+      execute_safe_commands: true
+      execute_all_commands: false
+      use_mcp: true
+      use_browser_autoapprove: false
+
+  github_actions:
+    interface: "GitHub Actions"
+    provider: "GitHub"
+    cost: "plano"
+    access_to_code: "direto"
+    best_for:
+      - "CI"
+      - "lint"
+      - "test"
+      - "build"
+      - "spec validation"
+    do_not_use_for:
+      - "decisao de negocio"
+      - "concluir tarefa sem humano"
+
+default_routing:
+  governance:
+    executor: "psiu_notion"
+    reviewer: "codex"
+    verifier: "codex"
+  documentation:
+    executor: "opencode_minimax_free"
+    reviewer: "codex"
+    verifier: "codex"
+  frontend_low_risk:
+    executor: "opencode_deepseek_free"
+    reviewer: "codex"
+    verifier: "github_actions"
+  admin_firestore:
+    executor: "codex"
+    reviewer: "code_security_reviewer"
+    verifier: "github_actions"
+    requires:
+      - "ENV-001 Java/JRE instalado"
+      - "Firestore Emulator rodando"
+  backend_security:
+    executor: "codex"
+    reviewer: "code_security_reviewer"
+    verifier: "github_actions"
+  architecture:
+    executor: "codex"
+    reviewer: "human"
+    verifier: "human"
+
+global_stop_conditions:
+  - "secrets ou credenciais"
+  - "billing/deploy/producao"
+  - "Firestore Rules, Storage ou Functions sem tarefa propria"
+  - "pricing/frete/agendamento/kits sem decisao humana"
+  - "mudanca em multiplos escopos sem plano aprovado"
+  - "merge, push ou status done sem aprovacao humana"

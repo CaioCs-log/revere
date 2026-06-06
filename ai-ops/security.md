@@ -16,6 +16,15 @@ Regras mínimas de segurança para agentes e revisores no repo Revere.
 - Não ampliar permissões de ferramentas.
 - Não conectar novos MCPs ou serviços sem autorização humana.
 - Não executar ações destrutivas sem confirmação explícita.
+- Não versionar `.mcp.json` real, tokens ou headers de autorização.
+- Configurações de ferramentas devem ser exemplos sem segredo ou adaptadores textuais.
+
+## Agentes e modelos gratuitos
+- Modelos gratuitos podem ser usados para execução de baixo risco, rascunhos e segunda opinião.
+- Não usar LLM gratuito como decisão final para arquitetura, auth, Rules, checkout, pagamento, dependências críticas ou produção.
+- Todo agente externo precisa receber contrato com `allowed_paths`, `forbidden_paths`, validação e critério de bloqueio.
+- Não permitir autoaprovação de edição em arquivos protegidos.
+- Não permitir autoexecução ampla de comandos (`executeAllCommands`, equivalentes) em tarefas sensíveis.
 
 ## Arquivos protegidos
 Alterações em arquivos protegidos exigem autorização explícita e revisão reforçada.
@@ -38,6 +47,16 @@ lockfiles
 .env*
 ```
 
+## Pastas tool-specific
+Pastas como `.agents/`, `.claude/`, `.gemini/`, `.codex/`, `.cline/` e configurações equivalentes devem ser tratadas como adaptadores, não como fonte superior.
+
+Regras:
+
+- `AGENTS.md` e `ai-ops/**` prevalecem em conflito.
+- Evitar três árvores longas mantidas manualmente quando um adapter curto resolve.
+- Se houver duplicação entre ferramentas, manter uma fonte canônica e gerar/adaptar instruções específicas.
+- Auditar drift antes de confiar em instrução tool-specific antiga.
+
 ## Dependências e scripts
 - Não instalar dependências sem autorização.
 - Não executar scripts desconhecidos sem revisão.
@@ -57,3 +76,4 @@ Pare e peça decisão humana se houver dúvida sobre:
 - deploy;
 - CI/CD crítica;
 - segurança de dados.
+- conclusão de SPEC/tarefa.

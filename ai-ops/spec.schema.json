@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://revere.local/ai-ops/spec.schema.json",
+  "title": "Revere AI-OPS SPEC metadata",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "title",
+    "status",
+    "owner",
+    "scope",
+    "gates",
+    "human_approval_required"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Z]+-[0-9]{3,}$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 5
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "ready-for-planning",
+        "planned",
+        "in-progress",
+        "verification",
+        "pending-human-approval",
+        "done",
+        "blocked"
+      ]
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 2
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "notion": {
+          "type": "string"
+        },
+        "issue": {
+          "type": "string"
+        },
+        "adr": {
+          "type": "string"
+        }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowed_paths", "forbidden_paths"],
+      "properties": {
+        "allowed_paths": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "forbidden_paths": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "gates": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    },
+    "agents": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "orchestrator": { "type": "string" },
+        "executor": { "type": "string" },
+        "spec_reviewer": { "type": "string" },
+        "code_reviewer": { "type": "string" },
+        "verifier": { "type": "string" }
+      }
+    },
+    "human_approval_required": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 2
+      }
+    },
+    "stop_conditions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 2
+      }
+    }
+  }
+}
